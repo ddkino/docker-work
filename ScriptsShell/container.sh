@@ -6,3 +6,5 @@ docker container ls  -q --filter "status=exited"
 docker ps -a -f status=exited -f status=created
 
 docker rm $(<cmd sh>)
+
+docker-compose down && docker-compose rm

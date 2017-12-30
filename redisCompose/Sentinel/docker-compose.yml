@@ -7,14 +7,21 @@ services:
     # build not recommanded maybe because conf image
     # build:
       # context: ./redis-master/
+    #scale range of port 
     ports: 
-      - "16379:6379"
+      - 16379-26370:6379
+    deploy:
+      mode: replicated
+      replicas: 6
   slave:
     image: redis:4.0.6-alpine
     command: redis-server --slaveof redis-master 6379 --masterauth foobared
     # command: redis-server --slaveof redis-master 6379 
+    # build:
+      # context: ./redis-slave/
+    #scale port with "+"
     ports:
-      - "26379:6379"
+      - 26379-36370:6379
     links:
       - master:redis-master
   sentinel:
