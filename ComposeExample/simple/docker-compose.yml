@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  web:
+    # build: ./src
+    # build with more params
+    build: 
+      context: .
+      args:
+        buildno: 1
+      labels:
+          - "com.example.description:=Accounting webapp"
+          - "com.example.department=Finance"
+          - "com.example.label"
+    ports: 
+      - "5000:5000"
+    volumes:
+      - .:/code
+  redis:
+    image: "redis:alpine"

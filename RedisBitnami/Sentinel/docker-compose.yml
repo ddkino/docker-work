@@ -1,0 +1,22 @@
+#https://github.com/mustafaileri/redis-cluster-with-sentinel
+version: '3'
+services:
+  master:
+    image: redis:4.0.6-alpine
+    ports: 
+      - "16379:6379"
+  slave:
+    image: redis:4.0.6-alpine
+    command: redis-server --slaveof redis-master 6379
+    ports: 
+      - "26379:6379"
+    links:
+      - master:redis-master
+  sentinel:
+    build: sentinel
+    environment:
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=5000
+    links:
+      - master:redis-master
+      - slave

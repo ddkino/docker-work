@@ -1,0 +1,12 @@
+{
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.16.2",
+    "http2": "^3.3.7",
+    "koa": "^2.4.1",
+    "spdy": "^3.4.7"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
