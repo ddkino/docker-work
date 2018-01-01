@@ -1,0 +1,54 @@
+# no need custom image 
+# take image from hub and add ENV
+# "No seed nodes" may take more time to join the ring
+
+version: '3.3'
+
+networks: 
+  dc1ring:
+    driver: bridge
+services:
+  cassandra-seed:
+    # container_name: container-cassandra-seed
+    environment:
+      - "JVM_OPTS=-Xms512m -Xmx512m"
+      - "CASSANDRA_CLUSTER_NAME=cha-cluster"
+    image: cassandra:3.11
+    ports:
+      - '127.0.0.1:9042-9142:9042'
+      - '127.0.0.1:9160-9260:9160'
+    networks:
+      - dc1ring
+  cassandra-join:
+    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 20 && /docker-entrypoint.sh cassandra -f"
+    environment:
+      - "CASSANDRA_SEEDS=cassandra-seed"
+      - "CASSANDRA_CLUSTER_NAME=cha-cluster"
+      - "JVM_OPTS=-Xms512m -Xmx512m"
+    image: cassandra:3.11
+    ports:
+      - '127.0.0.1:29042-29160:9042'
+      - '127.0.0.1:29160-29260:9160'
+    networks:
+      - dc1ring
+    depends_on: 
+      - cassandra-seed
+  cassandra-join-2:
+    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 20 && /docker-entrypoint.sh cassandra -f"
+    environment:
+      - "CASSANDRA_SEEDS=cassandra-seed"
+      - "CASSANDRA_CLUSTER_NAME=cha-cluster"
+      - "JVM_OPTS=-Xms512m -Xmx512m"
+    image: cassandra:3.11
+    ports:
+      - '127.0.0.1:29042-29160:9042'
+      - '127.0.0.1:29160-29260:9160'
+    networks:
+      - dc1ring
+    depends_on: 
+      - cassandra-seed
+
+      # command: /bin/bash -c "echo 'Waiting for seed node' && sleep 30 && /docker-entrypoint.sh cassandra -f"
+
+
+              # command: bash -c 'if [ -z "$$(ls -A /var/lib/cassandra/)" ] ; then sleep 120; fi && /docker-entrypoint.sh cassandra -f'
