@@ -10,9 +10,9 @@ services:
     #scale range of port 
     ports: 
       - 16379-26370:6379
-    deploy:
-      mode: replicated
-      replicas: 6
+    # deploy:
+    #   mode: replicated
+    #   replicas: 6
   slave:
     image: redis:4.0.6-alpine
     command: redis-server --slaveof redis-master 6379 --masterauth foobared

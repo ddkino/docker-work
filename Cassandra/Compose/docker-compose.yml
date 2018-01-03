@@ -47,8 +47,3 @@ services:
       - dc1ring
     depends_on: 
       - cassandra-seed
-
-      # command: /bin/bash -c "echo 'Waiting for seed node' && sleep 30 && /docker-entrypoint.sh cassandra -f"
-
-
-              # command: bash -c 'if [ -z "$$(ls -A /var/lib/cassandra/)" ] ; then sleep 120; fi && /docker-entrypoint.sh cassandra -f'
