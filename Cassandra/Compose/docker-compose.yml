@@ -1,13 +1,17 @@
 # no need custom image 
 # take image from hub and add ENV
 # "No seed nodes" may take more time to join the ring
-
+# todo ! create config file for common services
+# https://docs.docker.com/compose/compose-file/#configs-configuration-reference
 version: '3.3'
 
 networks: 
   dc1ring:
     driver: bridge
 services:
+  # --------------------------
+  ## SEED
+  # --------------------------
   cassandra-seed:
     # container_name: container-cassandra-seed
     environment:
@@ -19,6 +23,16 @@ services:
       - '127.0.0.1:9160-9260:9160'
     networks:
       - dc1ring
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042 # <-important
+      - 9142
+      - 9160 # <-important
+  # --------------------------
+  ## JOIN
+  # --------------------------
   cassandra-join:
     command: /bin/bash -c "echo 'Waiting for seed node' && sleep 20 && /docker-entrypoint.sh cassandra -f"
     environment:
@@ -31,6 +45,13 @@ services:
       - '127.0.0.1:29160-29260:9160'
     networks:
       - dc1ring
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042 # <-important
+      - 9142
+      - 9160 # <-important
     depends_on: 
       - cassandra-seed
   cassandra-join-2:
@@ -45,5 +66,12 @@ services:
       - '127.0.0.1:29160-29260:9160'
     networks:
       - dc1ring
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042 # <-important
+      - 9142
+      - 9160 # <-important
     depends_on: 
       - cassandra-seed

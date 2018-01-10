@@ -1,0 +1,22 @@
+version: '3.4'
+
+networks: 
+  natsring:
+    driver: bridge
+
+services:
+# todo consul
+  nats-2:
+    image: nats:latest
+    container_name: nats-2
+    volumes:
+      - type: bind
+        source: ./nats.01.conf
+        target: /gnatsd.conf
+    ports:
+        - '127.0.0.1:4223:4222'
+        - '127.0.0.1:6223:6222'
+        - '127.0.0.1:8223:8222'
+    networks: 
+      - natsring
+    command: ["-c", "gnatsd.conf", "-DV"]
