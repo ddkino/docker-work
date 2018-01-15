@@ -4,66 +4,78 @@
 # todo ! create config file for common services
 # https://docs.docker.com/compose/compose-file/#configs-configuration-reference
 version: '3.3'
-
 networks: 
   dc1ring:
     driver: bridge
 services:
   # --------------------------
-  ## SEED
+  ## ROOT fix port ideal for testing no scale
+  # --------------------------
+  cassandra-root:
+    container_name: cntn-cassandra-root
+    environment:
+      - "JVM_OPTS=-Xms512m -Xmx512m"
+      - "CASSANDRA_CLUSTER_NAME=cha-cluster"
+    image: cassandra:3.11
+    ports:
+      - '127.0.0.1:9042:9042'
+      - '127.0.0.1:9160:9160'
+    volumes:
+      - '/home/dd/workdata/docker_volumes/cassandra/n1:/var/lib/cassandra'
+    networks:
+      - dc1ring
+  # --------------------------
+  ## SEED scale run after root
   # --------------------------
   cassandra-seed:
-    # container_name: container-cassandra-seed
+    container_name: cntn-cassandra-seed
+    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 1 && /docker-entrypoint.sh cassandra -f"
     environment:
+      - "CASSANDRA_SEEDS=cassandra-root,cassandra-seed"
       - "JVM_OPTS=-Xms512m -Xmx512m"
       - "CASSANDRA_CLUSTER_NAME=cha-cluster"
     image: cassandra:3.11
     ports:
-      - '127.0.0.1:9042-9142:9042'
-      - '127.0.0.1:9160-9260:9160'
+      - '127.0.0.1:9043-9050:9042'
+      - '127.0.0.1:9161-9170:9160'
+    volumes:
+      - '/home/dd/workdata/docker_volumes/cassandra/n1:/var/lib/cassandra'
     networks:
       - dc1ring
-    expose:
-      - 7000
-      - 7001
-      - 7199
-      - 9042 # <-important
-      - 9142
-      - 9160 # <-important
-  # --------------------------
-  ## JOIN
-  # --------------------------
-  cassandra-join:
-    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 20 && /docker-entrypoint.sh cassandra -f"
-    environment:
-      - "CASSANDRA_SEEDS=cassandra-seed"
-      - "CASSANDRA_CLUSTER_NAME=cha-cluster"
-      - "JVM_OPTS=-Xms512m -Xmx512m"
-    image: cassandra:3.11
-    ports:
-      - '127.0.0.1:29042-29160:9042'
-      - '127.0.0.1:29160-29260:9160'
-    networks:
-      - dc1ring
-    expose:
-      - 7000
-      - 7001
-      - 7199
-      - 9042 # <-important
-      - 9142
-      - 9160 # <-important
     depends_on: 
+    - cassandra-root
+  # --------------------------
+  ## JOIN run after root and
+  # --------------------------
+  cassandra-join-1:
+    container_name: cntn-cassandra-join-1
+    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 1 && /docker-entrypoint.sh cassandra -f"
+    environment:
+      - "CASSANDRA_SEEDS=cassandra-root,cassandra-seed"
+      - "CASSANDRA_CLUSTER_NAME=cha-cluster"
+      - "JVM_OPTS=-Xms512m -Xmx512m"
+      # if conflit with IP use replace_address
+      # - "JVM_OPTS=-Xms512m -Xmx512m -Dcassandra.replace_address=172.18.0.4"
+    image: cassandra:3.11
+    ports:
+      - '127.0.0.1:19042-19050:9042'
+      - '127.0.0.1:19160-19170:9160'
+    networks:
+      - dc1ring
+    depends_on: 
+      - cassandra-root
       - cassandra-seed
   cassandra-join-2:
-    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 20 && /docker-entrypoint.sh cassandra -f"
+    container_name: cntn-cassandra-join-1
+    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 10 && /docker-entrypoint.sh cassandra -f"
     environment:
-      - "CASSANDRA_SEEDS=cassandra-seed"
+      - "CASSANDRA_SEEDS=cassandra-root,cassandra-seed"
       - "CASSANDRA_CLUSTER_NAME=cha-cluster"
       - "JVM_OPTS=-Xms512m -Xmx512m"
     image: cassandra:3.11
     ports:
-      - '127.0.0.1:29042-29160:9042'
-      - '127.0.0.1:29160-29260:9160'
+      - '127.0.0.1:19042-19050:9042'
+      - '127.0.0.1:19160-19170:9160'
     networks:
       - dc1ring
     expose:
@@ -74,4 +86,5 @@ services:
       - 9142
       - 9160 # <-important
     depends_on: 
+      - cassandra-root
       - cassandra-seed
