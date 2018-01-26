@@ -1,0 +1,3 @@
+FROM scratch
+COPY ./src/etcd/bin/etcd /
+CMD ["/etcd", "--version"]

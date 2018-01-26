@@ -19,6 +19,9 @@ services:
         - '127.0.0.1:8222:8222'
     networks: 
       - natsring
+    environment:
+      - SERVICE_NAME=natsA
+      - SERVICE_TAGS=nats
     # command: ["-c", "gnatsd.conf"]
     command: ["-c", "gnatsd.conf", "-DV"]
   nats-2:
@@ -34,6 +37,9 @@ services:
         - '127.0.0.1:8223:8222'
     networks: 
       - natsring
+    environment: # optional for testing discovery
+      - SERVICE_NAME=natsB
+      - SERVICE_TAGS=nats
     depends_on: 
       - nats-1
     ## routes must be explicit with conatiner name !

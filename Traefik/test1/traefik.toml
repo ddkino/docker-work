@@ -1,0 +1,46 @@
+# defaultEntryPoints = ["http", "https"]
+defaultEntryPoints = ["http"]
+[web]
+address = ":8080"
+  # todo htpasswd
+  # [web.auth.basic]
+  # users = ["admin:your_encrypted_password"]
+
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":8880"
+# ! uncomment to enable https !
+  #   [entryPoints.http.redirect]
+  #     entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+
+[acme]
+email = "your_email@example.com"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+onDemand = false
+
+# Enable Docker configuration backend
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "localhost"
+watch = true
+exposedbydefault = false
+
+
+[consul]
+# endpoint = "consul-client:8500"
+watch = true
+prefix = "traefik"
+
+
+[consulCatalog]
+# endpoint = "consul-client:8500"
+# domain = "consul.localhost"
+exposedByDefault = false
+prefix = "traefik"
+watch = true

@@ -1,0 +1,18 @@
+defaultEntryPoints = ["http", "https"]
+[web]
+address = ":8080"
+  # todo htpasswd
+  # [web.auth.basic]
+  # users = ["admin:your_encrypted_password"]
+
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+
+# Enable Docker configuration backend
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "localhost"
+watch = true
+exposedbydefault = false

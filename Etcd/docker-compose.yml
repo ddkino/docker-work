@@ -1,0 +1,16 @@
+version: '3.3'
+networks: 
+  etcd-ring:
+    driver: bridge
+services:
+  etcd-root:
+    container_name: 'etcd-root'
+    # build:
+    image: 'etcd:scratch'
+    ports:
+      - '127.0.0.1:2379:2379'
+      - '127.0.0.1:2380:2380'
+    entrypoint: /etcd
+    networks: 
+      - 'etcd-ring'
+      

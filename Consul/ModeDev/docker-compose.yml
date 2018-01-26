@@ -1,0 +1,46 @@
+version: '3.3'
+networks: 
+  consul-net:
+    driver: bridge
+  consul-net-host:
+    driver: host
+services:
+## for testing use consul command `consul agent -dev`  8500/ui !!!do not use docker!!!
+
+  # ---------------
+  # official image mode DEV: https://hub.docker.com/_/consul/
+  # ---------------
+  consul-dev:
+    container_name: 'consul-dev'
+    # build:
+    image: 'consul:1.0.2'
+    command: ["consul", "agent", "-dev", "-data-dir=/tmp/consul", "-ui"]
+    network_mode: "host"
+
+
+  # ---------------
+  # famous image : https://hub.docker.com/r/progrium/consul/
+  # ---------------
+networks: 
+  consul-net:
+    driver: bridge
+  proxy:
+      external: true
+
+services:
+  consul-client:
+    container_name: 'consul-client'
+    # build:
+    image: 'consul:1.0.2'
+    # command: ["consul", "agent", "-dev", "-bootstrap", "-data-dir=/tmp/consul", "-ui"]
+    environment:
+      - 'CONSUL_CLIENT_INTERFACE=eth0'
+      - 'CONSUL_BIND_INTERFACE=eth0'
+    ports:
+      - '8400:8400' #rpc
+      - '8500:8500' #http
+      - '8600:53/udp' #dns
+      - '8301:8301' #lan
+      - '8302:8302' #wan
+    networks: 
+      - 'proxy'

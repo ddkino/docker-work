@@ -1,0 +1,44 @@
+version: "3.3"
+
+networks: 
+  default:
+    external:
+      name: proxy
+  internal:
+    external: false
+
+services:
+  traefik:
+    container_name: tk
+    restart: always
+    image: traefik:1.5
+    command: traefik --debug=true --consul.endpoint=consul-client.proxy:8500 --consulCatalog.endpoint=consul-client.proxy:8500
+    ports:
+      - 8880:8880 # routing port IN -> Container, instead of writing 'ports' in containers we put here
+      - 443:443
+      - 8080:8080
+    labels: 
+      # - traefik.enable=true # ! important !
+      - traefik.frontend.rule=Host:monitor.localhost
+      - traefik.port=8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+      - ./acme.json:/acme.json
+    networks: 
+      - default
+
+  hello:
+    image: helloworld:latest
+    environment:
+      - SERVICE_NAME=hello.service.consul # only for discovery with Consul
+      - SERVICE_TAGS=hello
+    labels:
+      - traefik.backend=hello # re-route to the container name
+      - traefik.frontend.rule=Host:hello.localhost # /etc/hosts sub-domain not needed if domain is in hosts
+      - traefik.enable=true # ! important !
+      - traefik.docker.network=proxy
+      - traefik.port=8880
+    networks:
+      - internal
+      - default

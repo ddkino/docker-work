@@ -1,0 +1,14 @@
+version: '3.3'
+
+services:
+  consul-registrator:
+    container_name: 'consul-registrator'
+    # build:
+    image: 'gliderlabs/registrator:latest'
+    network_mode: "host"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock 
+    # environment:
+    #   - 'CONSUL_HTTP_TOKEN=<>'
+    # -internal 		Use exposed ports instead of published ports example port 8880
+    command: ["-internal", "consul://127.0.0.1:8500"]

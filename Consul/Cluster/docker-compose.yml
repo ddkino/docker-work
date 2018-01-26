@@ -1,0 +1,89 @@
+  # ---------------
+  # BETTER to RUN in VM with docker-machine to have IP
+  # ---------------
+
+version: '3.3'
+networks: 
+  consul-net:
+    driver: bridge
+  proxy:
+      external: true
+services:
+  # ---------------
+  # official image mode DEV: https://hub.docker.com/_/consul/
+  # ---------------
+
+  consul-boot:
+    container_name: 'consul-boot'
+    # build:
+    image: 'consul:1.0.2'
+    environment:
+      - 'CONSUL_BIND_INTERFACE=eth0'
+    command: ["consul", "agent", "-server", 
+    "-datacenter=fr_1",  
+    "-bootstrap-expect=1", # direct leader no wait
+    "-data-dir=/tmp/consul",
+    "-encrypt=3yATnlRz+nH55btS35xIfA=="
+    ]
+    labels: 
+      - traefik.enable=true # ! important !
+    networks: 
+      - 'proxy'
+  ## to scale mode server
+  consul-server:
+    # build:
+    image: 'consul:1.0.2'
+    container_name: 'consul-server'
+    environment:
+      # - 'CONSUL_CLIENT_INTERFACE=eth0'
+      - 'CONSUL_BIND_INTERFACE=eth0'
+    # ports:
+    #   - "8400:8400" #rpc
+    #   - "8500:8500" #http
+    #   - "8600:53/udp" #dns ! important port 53 !
+    #   - "8301:8301" #lan
+    #   - "8302:8302" #wan
+    command: [
+      "consul", "agent", 
+      "-server", "-datacenter=fr_1", "-data-dir=/tmp/consul", "-ui",
+     "-join=consul-boot",
+     "-encrypt=3yATnlRz+nH55btS35xIfA=="
+     ]
+    depends_on: 
+      - 'consul-boot'
+    networks: 
+      - 'proxy'
+  ## mode client
+  consul-client:
+    # build:
+    image: 'consul:1.0.2'
+    container_name: 'consul-client'
+    environment:
+      - 'CONSUL_CLIENT_INTERFACE=eth0'
+      - 'CONSUL_BIND_INTERFACE=eth0'
+    ports:
+      - "8400:8400" #rpc
+      - "8500:8500" #http
+      - "8600:53/udp" #dns ! important port 53 !
+      - "8301:8301" #lan
+      - "8302:8302" #wan
+    command: [
+    "consul", "agent", "-server", 
+    "-data-dir=/tmp/consul", 
+    "-datacenter=fr_1", 
+    "-join=consul-boot", 
+    "-join=consul-server", 
+    "-client=0.0.0.0", "-ui",
+    "-encrypt=3yATnlRz+nH55btS35xIfA=="
+    ]
+    labels:
+     - traefik.enable=true
+     - traefik.tags=api
+     - traefik.tags=external
+    depends_on: 
+      - 'consul-boot'
+      - 'consul-server'
+    networks: 
+      # - 'consul-net'
+      - 'proxy'
+      

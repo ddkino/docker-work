@@ -1,0 +1,27 @@
+{
+  "Email": "your_email@example.com",
+  "Registration": {
+    "body": {
+      "resource": "reg",
+      "id": 28113963,
+      "key": {
+        "kty": "RSA",
+        "n": "zPqGPtEMM0uvLd0fb4B7GKGjwXTY9sXOyiRfDCg_SfdYfEUSmX_9B2lusw--DjzaNoSEWMkOWSg9TqKkPmvBllsm0U0fE5zlLTnOztBDpXjxhRQfAJsCdzi7AaEbg6pWWGRldJSb-7joPItCfXsfNmiBTeQdx4vzBNguRaGPTgja8fay_uTQRsO9yWTnFx911bueO5VoYgeA6pUovyebsCQ4hDbZQR1ckxR8Pot-gpeeP15zdYjhA9rinjhxSE9oPtJRuga3WmEemKKH19NBAqUTO6R54eXIuFE_GGYfbyhriRrzKxRqnKaVTtl9WlxRBIuvi1wX7TypeaJeAJpp3eKUiTIHH1mqxvWgYDHUcd-xhmWJZV4AqBt1D1nZgt0R4Abq2cx8-UWi4YZ3BMobEfeAix3ul9Qknh2u8N9QKia88Wp4YSTkTLENzP7-W2Dw05LpMJp6-q-tj10hQZWDBIL03uhSyd7JaLq88bgbQKT8V73l0tjh00zYjUyo0offN6GL-RZQ54CFSFgEeiOmknj08M-nbN_H6YBbLTxh-2sq4CLiShL-aqh30_ipvqgWbDmtBRGKhnxL7wSoqJ4-tKvi2GOkv0rZPRsfXNbsSsknMnNlExrtYlqtwpF5eygCJ0aOVT1xq1Gw8BhNp1WCNIMjUWCx17EhlJnHEvhZagE",
+        "e": "AQAB"
+      },
+      "contact": [
+        "mailto:your_email@example.com"
+      ],
+      "agreement": "https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf"
+    },
+    "uri": "https://acme-v01.api.letsencrypt.org/acme/reg/28113963",
+    "new_authzr_uri": "https://acme-v01.api.letsencrypt.org/acme/new-authz",
+    "terms_of_service": "https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf"
+  },
+  "PrivateKey": "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",
+  "DomainsCertificate": {
+    "Certs": []
+  },
+  "ChallengeCerts": {},
+  "HTTPChallenge": null
+}
