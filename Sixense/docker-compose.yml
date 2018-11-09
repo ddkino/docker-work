@@ -1,0 +1,38 @@
+version: '3'
+networks: 
+  scanprint-net:
+    driver: bridge 
+services: 
+  mongodb:
+    container_name: scanprint-db
+    #image: mongo:4.0.3-xenial
+    image: bitnami/mongodb:4.0
+    ports:
+      - "28017:27017"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: scanprint
+    volumes: 
+      - /home/dd/workdata/docker_volumes/mongo:/data/db
+    networks:
+      - scanprint-net
+  scanprint-app:
+    container_name: scanprint-app
+    image: node:11.0.0-alpine
+    environment:
+      NODE_ENV: localhost
+    ports:
+      - "3000:3000"
+    # Create app directory
+    working_dir: /usr/src/app
+    volumes:
+      - /workdata/SIXENSE/api6:/usr/src/app
+    command: sh -c "npm install lerna -g && npm install && npm run bootstrap && npm run app:dev:storage"
+    links: 
+      - mongodb
+    depends_on:
+      - mongodb
+    networks:
+      - scanprint-net
