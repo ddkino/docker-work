@@ -1,0 +1,18 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+  db:
+    image: postgres:11
+    ports:
+      - '5432:5432'
+    volumes:
+      - /workdata/pgsql/data/:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: squad
+      POSTGRES_PASSWORD: squad
+      POSTGRES_DB: squadv2
+
+volumes:
+  postgresql_data:
+    driver: local
