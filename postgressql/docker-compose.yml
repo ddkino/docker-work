@@ -1,6 +1,8 @@
 # Use postgres/example user/password credentials
 version: '3.1'
 
+# create 2 services, connect to pgAdmin 0.0.0.0:5433 
+# then create server ip:"db" port 5432 
 services:
   db:
     image: postgres:11
@@ -12,6 +14,26 @@ services:
       POSTGRES_USER: squad
       POSTGRES_PASSWORD: squad
       POSTGRES_DB: squadv2
+    networks:
+      - postgres
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: dd@dd.com
+      PGADMIN_DEFAULT_PASSWORD: dd
+    volumes:
+       - /workdata/pgsql/pgadmin:/root/.pgadmin
+    ports:
+      - '5433:80'
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
 
 volumes:
   postgresql_data:
